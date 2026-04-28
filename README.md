@@ -1,117 +1,124 @@
-# Project Name
-Ai-Project-Planner
 
-A modern web application focused on real-world functionality, clean UI, and practical user experience.
+# 🚀 ScopeLab
 
----
+Turn messy client ideas into clear project scopes, timelines, and pricing.
 
-## Live Demo
-
-👉 *(Coming soon)*
+## 🌐 Live Demo
+https://scopelab.vercel.app/
 
 ---
 
-## Why I Built This
+## 🧩 Overview
 
-I wanted to practice building real-world applications that simulate actual products.
+ScopeLab is a SaaS-style web application built for freelancers, agencies, and developers who need to quickly define project scope and estimate pricing.
 
-Instead of just creating UI components, I focused on building complete user flows, handling state, and improving user experience.
-
----
-
-## Real-World Use Case
-
-This application simulates a real product that could be used by freelancers or small teams in everyday workflows.
-
-The goal was to build something practical, not just a demo project.
+Instead of starting from scratch, users can generate structured project plans, refine them, and present them to clients in a clean, professional format.
 
 ---
 
-## Key Features
+## ✨ Features
 
-* Authentication (login / signup)
-* Real-time data handling
-* Dashboard with structured data
-* Responsive UI with clean UX
-
----
-
-## My Role & Implementation
-
-I built this project focusing on:
-
-* Designing the full user flow from start to finish
-* Managing application state and async logic
-* Structuring the project for scalability
-* Creating reusable UI components
-* Handling user interactions and feedback
-
-<!-- ZA AI PROJEKAT DODAJ OVO -->
-
-* Transforming AI responses into structured and usable UI data
-* Designing the flow between user input and AI-generated output
+- 🧠 Project scope generation from simple input  
+- ✏️ Editable plans (refine and adjust outputs)  
+- 💰 Pricing and timeline estimation  
+- 📄 Client-ready proposal preview  
+- 📤 Export to PDF (demo)  
+- 🔗 Shareable project views  
+- 📊 Dashboard with project tracking  
+- 🏷️ Plan states (Draft, In Progress, Approved)  
+- ⚙️ Usage-based flow (Free vs Pro experience)  
 
 ---
 
-## Challenges & Solutions
+## 🛠 Tech Stack
 
-One challenge I faced was managing application state without overcomplicating the architecture.
-
-I solved this by organizing logic into reusable hooks and keeping components clean and focused.
-
-Another challenge was handling loading and error states in a user-friendly way, which I solved by implementing clear UI feedback.
-
----
-
-## Architecture Decisions
-
-I chose a simple component + hooks structure to keep the project scalable but easy to maintain.
-
-Business logic is separated into hooks, while UI components remain reusable and clean.
+- ⚛️ React + Vite  
+- 🎨 Tailwind CSS  
+- 🗄 Supabase (Auth + Database)  
+- 🔌 External API integration  
+- ▲ Vercel (Deployment)  
 
 ---
 
-## Tech Stack
+## 🎯 Product Focus
 
-* React + TypeScript (for scalable frontend development)
-* Tailwind CSS (for fast and consistent styling)
-* Supabase (authentication and database)
+This project is designed to simulate a real SaaS product:
+
+- 🔐 User authentication  
+- 💳 Subscription-style UX (Free / Pro flow)  
+- 📈 Realistic dashboard experience  
+- ⚡ Clean UX with loading, empty, and error states  
+
+The goal was to build something that feels like a production-ready tool — not just a demo.
 
 ---
 
-## Quick Start
+## 🚀 Getting Started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Dimson7777/scopelab.git
+cd scopelab
+```
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Run locally:
+
+```bash
 npm run dev
 ```
 
 ---
 
-## What I Learned
+## 🔑 Environment Variables
 
-* Managing application state and user flows
-* Structuring a scalable frontend project
-* Improving user experience with feedback and UI states
-* Working with real-world app patterns
+Create a `.env` file in the root:
 
----
-
-## What I Would Improve
-
-* Add role-based access (admin/user)
-* Improve performance and state management
-* Add better error handling and validation
-* Enhance UI with more edge cases
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
+VITE_API_URL=your_api_url
+```
 
 ---
 
+## 🚢 Deployment
+
+The project is deployed on Vercel.
 
 ---
 
-## Notes
+## 🧠 Design Decisions
 
-This is a portfolio project built to demonstrate practical frontend and full-stack skills.
+- Focused on real-world client workflows  
+- Avoided generic “AI tool” patterns  
+- Built around clean, minimal SaaS UX  
+- Prioritized usability and clarity  
 
+---
 
+## 🔮 Future Improvements
+
+- 💳 Full Stripe billing integration  
+- 👥 Team collaboration features  
+- 🗂 Persistent project history  
+- 📊 Advanced pricing logic  
+- 🎨 Custom branding for client proposals  
+
+---
+
+## 👨‍💻 Author
+
+**Dimitrije Bukejlovic**  
+Full Stack Engineer  
+
+---
+
+> This project represents a practical approach to building and shipping a SaaS-style product from idea to deployment.
 
