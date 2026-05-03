@@ -1,11 +1,100 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Check, FileText, Clock, DollarSign } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, Check } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { HeroAnimation } from "./HeroAnimation";
+
+// ── Headline typewriter ────────────────────────────────────────────────────────
+const HEADLINE_LINES = ["Scope it.", "Price it.", "Send it."] as const;
+
+function useTypewriterLines(shouldReduce: boolean | null) {
+  const [ready, setReady] = useState(false);
+  const [lineIdx, setLineIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+  const [showCursor, setShowCursor] = useState(true);
+
+  // Initial delay aligns with container fade-in (700 ms)
+  useEffect(() => {
+    if (shouldReduce) { setReady(true); return; }
+    const t = setTimeout(() => setReady(true), 480);
+    return () => clearTimeout(t);
+  }, [shouldReduce]);
+
+  // Show all lines immediately when reduced-motion is preferred
+  useEffect(() => {
+    if (!shouldReduce) return;
+    setLineIdx(HEADLINE_LINES.length - 1);
+    setCharIdx(HEADLINE_LINES[HEADLINE_LINES.length - 1].length);
+    setShowCursor(false);
+  }, [shouldReduce]);
+
+  // Typing engine
+  useEffect(() => {
+    if (shouldReduce || !ready) return;
+    const current = HEADLINE_LINES[lineIdx];
+    if (charIdx < current.length) {
+      const t = setTimeout(() => setCharIdx((c) => c + 1), 58 + Math.random() * 38);
+      return () => clearTimeout(t);
+    }
+    if (lineIdx < HEADLINE_LINES.length - 1) {
+      const t = setTimeout(() => { setLineIdx((l) => l + 1); setCharIdx(0); }, 290);
+      return () => clearTimeout(t);
+    }
+    // All done — keep cursor blinking 2 s then hide
+    const t = setTimeout(() => setShowCursor(false), 2200);
+    return () => clearTimeout(t);
+  }, [ready, lineIdx, charIdx, shouldReduce]);
+
+  return { lineIdx, charIdx, showCursor };
+}
+
+// ── Flow indicator ─────────────────────────────────────────────────────────────
+const FLOW_STEPS = ["Client brief", "AI processing", "Scope ready", "Proposal sent"] as const;
+
+function FlowIndicator({ shouldReduce }: { shouldReduce: boolean | null }) {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (shouldReduce) return;
+    const id = setInterval(() => setActive((s) => (s + 1) % FLOW_STEPS.length), 1900);
+    return () => clearInterval(id);
+  }, [shouldReduce]);
+
+  return (
+    <div className="mt-5 hidden flex-wrap items-center gap-y-1.5 sm:flex" aria-hidden="true">
+      {FLOW_STEPS.map((step, i) => (
+        <span key={step} className="flex items-center">
+          <span
+            className={`relative flex items-center gap-1.5 rounded px-2 py-0.5 text-[11px] font-medium transition-all duration-500 ${
+              active === i
+                ? "text-violet-300 bg-violet-500/[0.08] border border-violet-400/20"
+                : "text-muted-foreground/45"
+            }`}
+            style={active === i ? { boxShadow: "0 0 10px rgba(139,92,246,0.18)" } : undefined}
+          >
+            <span
+              className={`h-1 w-1 shrink-0 rounded-full transition-all duration-500 ${
+                active === i ? "bg-violet-400" : "bg-muted-foreground/30"
+              }`}
+              style={active === i ? { boxShadow: "0 0 5px rgba(167,139,250,0.8)" } : undefined}
+            />
+            {step}
+          </span>
+          {i < FLOW_STEPS.length - 1 && (
+            <span className="mx-0.5 text-[10px] text-muted-foreground/25">›</span>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 const Hero = () => {
   const { user, loading } = useAuth();
+  const shouldReduce = useReducedMotion();
+  const { lineIdx, charIdx, showCursor } = useTypewriterLines(shouldReduce);
 
   return (
     <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
@@ -34,16 +123,48 @@ const Hero = () => {
             </div>
 
             <h1 className="font-display text-5xl font-bold leading-[0.95] tracking-tight text-foreground sm:text-6xl lg:text-7xl xl:text-[5.5rem]">
-              Scope it.
-              <br />
-              Price it.
-              <br />
-              <span className="relative inline-block">
-                <span className="text-gradient">Send it.</span>
+              {/* Line 0 — Scope it. */}
+              <span className="block" style={{ minHeight: "0.95em" }}>
+                {lineIdx === 0
+                  ? HEADLINE_LINES[0].slice(0, charIdx)
+                  : HEADLINE_LINES[0]}
                 <span
-                  className="absolute -inset-x-6 -bottom-3 -z-10 h-16 rounded-full bg-primary/30 blur-3xl animate-glow-pulse"
-                  aria-hidden
+                  className={`ml-0.5 inline-block h-[0.75em] w-[3px] translate-y-[0.1em] rounded-[1px] bg-foreground/70 align-middle transition-opacity duration-300 ${
+                    lineIdx === 0 && showCursor ? "opacity-100 animate-pulse" : "opacity-0"
+                  }`}
                 />
+              </span>
+              {/* Line 1 — Price it. */}
+              <span className="block" style={{ minHeight: "0.95em" }}>
+                {lineIdx >= 1
+                  ? lineIdx === 1
+                    ? HEADLINE_LINES[1].slice(0, charIdx)
+                    : HEADLINE_LINES[1]
+                  : ""}
+                <span
+                  className={`ml-0.5 inline-block h-[0.75em] w-[3px] translate-y-[0.1em] rounded-[1px] bg-foreground/70 align-middle transition-opacity duration-300 ${
+                    lineIdx === 1 && showCursor ? "opacity-100 animate-pulse" : "opacity-0"
+                  }`}
+                />
+              </span>
+              {/* Line 2 — Send it. (gradient) */}
+              <span className="block" style={{ minHeight: "0.95em" }}>
+                {lineIdx >= 2 && (
+                  <span className="relative inline-block">
+                    <span className="text-gradient">
+                      {HEADLINE_LINES[2].slice(0, charIdx)}
+                    </span>
+                    <span
+                      className={`ml-0.5 inline-block h-[0.75em] w-[3px] translate-y-[0.1em] rounded-[1px] bg-accent/80 align-middle transition-opacity duration-300 ${
+                        lineIdx === 2 && showCursor ? "opacity-100 animate-pulse" : "opacity-0"
+                      }`}
+                    />
+                    <span
+                      className="absolute -inset-x-6 -bottom-3 -z-10 h-16 rounded-full bg-primary/30 blur-3xl animate-glow-pulse"
+                      aria-hidden
+                    />
+                  </span>
+                )}
               </span>
             </h1>
 
@@ -51,6 +172,8 @@ const Hero = () => {
               Turn a messy client brief into a real project plan — scope,
               timeline, price, proposal. In a minute, not an afternoon.
             </p>
+
+            <FlowIndicator shouldReduce={shouldReduce} />
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               {!loading && user ? (
@@ -85,79 +208,14 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT: Product preview — floating UI cards */}
+          {/* RIGHT: Product animation */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="relative lg:col-span-5"
           >
-            {/* Glow halo */}
-            <div className="absolute -inset-8 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/30 via-transparent to-accent/25 blur-3xl" />
-
-            {/* Main brief card */}
-            <div className="glass-strong relative rounded-2xl p-5 shadow-float">
-              <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                <Sparkles className="h-3 w-3 text-accent" />
-                Client brief
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-foreground">
-                "We're a streetwear brand. Need an online store — product pages,
-                cart, Stripe, and a way for the team to upload drops."
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-[11px] text-accent">
-                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-                Generating plan…
-              </div>
-            </div>
-
-            {/* Floating output cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="absolute -right-4 top-8 w-52 rotate-3 rounded-xl border border-border bg-card/90 p-3.5 shadow-float backdrop-blur-md sm:-right-10"
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Clock className="h-3.5 w-3.5" />
-                </div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Timeline</p>
-              </div>
-              <p className="mt-2 font-display text-base font-semibold text-foreground">8–10 weeks</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Design → Dev → QA</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="absolute -left-4 -bottom-2 w-56 -rotate-2 rounded-xl border border-border bg-card/90 p-3.5 shadow-float backdrop-blur-md sm:-left-10"
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                  <DollarSign className="h-3.5 w-3.5" />
-                </div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Price range</p>
-              </div>
-              <p className="mt-2 font-display text-base font-semibold text-foreground">$12.5k – $18k</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Defendable rationale</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1 }}
-              className="absolute right-6 -bottom-8 w-44 rotate-2 rounded-xl border border-border bg-card/90 p-3 shadow-float backdrop-blur-md"
-            >
-              <div className="flex items-center gap-2 text-[11px] text-foreground">
-                <FileText className="h-3.5 w-3.5 text-primary" />
-                Proposal.pdf
-              </div>
-              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-primary to-accent" />
-              </div>
-            </motion.div>
+            <HeroAnimation />
           </motion.div>
         </div>
 

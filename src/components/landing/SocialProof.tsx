@@ -1,10 +1,49 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Star } from "lucide-react";
 
-const stats = [
-  { value: "120+", label: "Freelancers using it weekly" },
-  { value: "2,300+", label: "Project plans generated" },
-  { value: "47 min", label: "Avg. time saved per proposal" },
+// ── Count-up number animation ───────────────────────────────────────────────────────
+function CountUp({
+  target,
+  suffix,
+  format,
+}: {
+  target: number;
+  suffix: string;
+  format?: (n: number) => string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.4 });
+  const shouldReduce = useReducedMotion();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    if (shouldReduce) { setCount(target); return; }
+    let raf: number;
+    const startTime = performance.now();
+    const duration = 1700;
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      setCount(Math.round(eased * target));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isInView, target, shouldReduce]);
+
+  const display = format ? format(count) : String(count);
+  return <span ref={ref}>{display}{suffix}</span>;
+}
+
+type Stat = { target: number; suffix: string; format?: (n: number) => string; label: string };
+
+const stats: Stat[] = [
+  { target: 120, suffix: "+", label: "Freelancers using it weekly" },
+  { target: 2300, suffix: "+", format: (n) => n.toLocaleString("en-US"), label: "Project plans generated" },
+  { target: 47, suffix: " min", label: "Avg. time saved per proposal" },
 ];
 
 const quotes = [
@@ -41,7 +80,7 @@ const SocialProof = () => {
               className="text-center sm:text-left"
             >
               <p className="font-display text-4xl font-bold tracking-tight text-gradient sm:text-5xl">
-                {s.value}
+                <CountUp target={s.target} suffix={s.suffix} format={s.format} />
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
             </motion.div>
