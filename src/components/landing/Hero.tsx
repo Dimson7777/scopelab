@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles, Check } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { HeroAnimation } from "./HeroAnimation";
+import { HeroLiveOverlay } from "./HeroLiveOverlay";
 
 // ── Headline typewriter ────────────────────────────────────────────────────────
 const HEADLINE_LINES = ["Scope it.", "Price it.", "Send it."] as const;
@@ -218,6 +219,9 @@ const Hero = () => {
             <HeroAnimation />
           </motion.div>
         </div>
+
+        {/* Live product feel overlay — NEW, no existing elements modified */}
+        <HeroLiveOverlay />
 
         {/* Social proof bar */}
         <motion.div
